@@ -1,6 +1,6 @@
 import { Badge, Image, Paper, ScrollArea, Table, Text } from "@mantine/core";
 
-import type { CardData } from "../types";
+import type { CardData, ElementType } from "../types";
 
 interface CardListProps {
     cards: CardData[];
@@ -12,6 +12,14 @@ const rarityColorMap = {
     R: "orange",
     E: "grape",
 } as const;
+
+const elementColorMap: Record<ElementType, string> = {
+    無: "#5c6670",
+    火: "#c35b2c",
+    水: "#3ea7c2",
+    地: "#369f22",
+    風: "#b18510",
+};
 
 export function CardList({ cards }: CardListProps) {
     if (cards.length === 0) {
@@ -46,7 +54,9 @@ export function CardList({ cards }: CardListProps) {
             </Table.Td>
             <Table.Td>{card.名前}</Table.Td>
             <Table.Td>
-                <Badge variant="light">{card.属性}</Badge>
+                <Badge color={elementColorMap[card.属性]} c="white" variant="filled">
+                    {card.属性}
+                </Badge>
             </Table.Td>
             <Table.Td>
                 <Badge color={rarityColorMap[card.レアリティ]} variant="filled">
@@ -69,10 +79,10 @@ export function CardList({ cards }: CardListProps) {
                         <Table.Th>画像</Table.Th>
                         <Table.Th>名前</Table.Th>
                         <Table.Th>属性</Table.Th>
-                        <Table.Th>レアリティ</Table.Th>
                         <Table.Th>AT / HP</Table.Th>
                         <Table.Th>コスト</Table.Th>
                         <Table.Th>能力テキスト</Table.Th>
+                        <Table.Th>レアリティ</Table.Th>
                     </Table.Tr>
                 </Table.Thead>
                 <Table.Tbody>{rows}</Table.Tbody>
