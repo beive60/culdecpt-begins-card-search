@@ -1,4 +1,4 @@
-import { Badge, Image, Paper, ScrollArea, Table, Text } from "@mantine/core";
+import { Badge, Image, Paper, ScrollArea, Stack, Table, Text } from "@mantine/core";
 
 import type { CardData, ElementType } from "../types";
 
@@ -52,15 +52,17 @@ export function CardList({ cards }: CardListProps) {
                     </Paper>
                 )}
             </Table.Td>
-            <Table.Td>{card.名前}</Table.Td>
+            <Table.Td>
+                <Stack gap={4}>
+                    <Badge color={rarityColorMap[card.レアリティ]} variant="filled" w="fit-content">
+                        {card.レアリティ}
+                    </Badge>
+                    <Text fw={500}>{card.名前}</Text>
+                </Stack>
+            </Table.Td>
             <Table.Td>
                 <Badge color={elementColorMap[card.属性]} c="white" variant="filled">
                     {card.属性}
-                </Badge>
-            </Table.Td>
-            <Table.Td>
-                <Badge color={rarityColorMap[card.レアリティ]} variant="filled">
-                    {card.レアリティ}
                 </Badge>
             </Table.Td>
             <Table.Td>
@@ -82,7 +84,6 @@ export function CardList({ cards }: CardListProps) {
                         <Table.Th>AT / HP</Table.Th>
                         <Table.Th>コスト</Table.Th>
                         <Table.Th>能力テキスト</Table.Th>
-                        <Table.Th>レアリティ</Table.Th>
                     </Table.Tr>
                 </Table.Thead>
                 <Table.Tbody>{rows}</Table.Tbody>
