@@ -2,6 +2,7 @@
 
 export type ElementType = "無" | "火" | "水" | "地" | "風";
 export type RarityType = "N" | "S" | "R" | "E";
+export type CardKind = "クリーチャー" | "アイテム" | "スペル";
 
 export interface CardCost {
     魔力: number;
@@ -17,11 +18,13 @@ export interface CardTag {
 }
 
 export interface CardData {
+    種類: CardKind;
+    分類: string | null;
     名前: string;
-    属性: ElementType;
+    属性: ElementType | null;
     レアリティ: RarityType;
-    AT: number;
-    HP: number;
+    AT: number | null;
+    HP: number | null;
     コスト: CardCost;
     配置制限: string[];
     アイテム制限: string[];

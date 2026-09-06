@@ -13,6 +13,8 @@ export default function App() {
         selectedElements,
         setSelectedElements,
         clearSelectedElements,
+        isCreatureFilterEnabled,
+        setIsCreatureFilterEnabled,
         atRange,
         setAtRange,
         resetAtRange,
@@ -58,6 +60,8 @@ export default function App() {
                                 selectedElements={selectedElements}
                                 onSelectedElementsChange={setSelectedElements}
                                 onSelectedElementsClear={clearSelectedElements}
+                                isCreatureFilterEnabled={isCreatureFilterEnabled}
+                                onCreatureFilterEnabledChange={setIsCreatureFilterEnabled}
                                 atRange={atRange}
                                 onAtRangeChange={setAtRange}
                                 onAtRangeReset={resetAtRange}

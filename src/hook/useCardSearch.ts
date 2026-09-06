@@ -40,6 +40,8 @@ export interface UseCardSearchResult {
     selectedElements: ElementType[];
     setSelectedElements: React.Dispatch<React.SetStateAction<ElementType[]>>;
     clearSelectedElements: () => void;
+    isCreatureFilterEnabled: boolean;
+    setIsCreatureFilterEnabled: React.Dispatch<React.SetStateAction<boolean>>;
     atRange: [number, number];
     setAtRange: React.Dispatch<React.SetStateAction<[number, number]>>;
     resetAtRange: () => void;
@@ -67,6 +69,11 @@ export interface UseCardSearchResult {
 }
 
 export function useCardSearch(cardData: CardData[]): UseCardSearchResult {
+    const statCards = useMemo(
+        () => cardData.filter((card) => card.AT !== null && card.HP !== null),
+        [cardData],
+    );
+
     const availableCostRange = useMemo<[number, number]>(() => {
         if (cardData.length === 0) {
             return [0, 0];
@@ -77,22 +84,22 @@ export function useCardSearch(cardData: CardData[]): UseCardSearchResult {
     }, [cardData]);
 
     const availableAtRange = useMemo<[number, number]>(() => {
-        if (cardData.length === 0) {
+        if (statCards.length === 0) {
             return [0, 0];
         }
 
-        const values = cardData.map((card) => card.AT);
+        const values = statCards.map((card) => card.AT as number);
         return [Math.min(...values), Math.max(...values)];
-    }, [cardData]);
+    }, [statCards]);
 
     const availableHpRange = useMemo<[number, number]>(() => {
-        if (cardData.length === 0) {
+        if (statCards.length === 0) {
             return [0, 0];
         }
 
-        const values = cardData.map((card) => card.HP);
+        const values = statCards.map((card) => card.HP as number);
         return [Math.min(...values), Math.max(...values)];
-    }, [cardData]);
+    }, [statCards]);
 
     const availableAbilityTagSuggestions = useMemo(() => {
         const suggestions = new Set<string>();
@@ -107,6 +114,7 @@ export function useCardSearch(cardData: CardData[]): UseCardSearchResult {
     }, [cardData]);
 
     const [selectedElements, setSelectedElements] = useState<ElementType[]>([]);
+    const [isCreatureFilterEnabled, setIsCreatureFilterEnabled] = useState(false);
     const [atRange, setAtRange] = useState<[number, number]>(availableAtRange);
     const [hpRange, setHpRange] = useState<[number, number]>(availableHpRange);
     const [costRange, setCostRange] = useState<[number, number]>(availableCostRange);
@@ -156,6 +164,7 @@ export function useCardSearch(cardData: CardData[]): UseCardSearchResult {
 
     const resetFilters = () => {
         clearSelectedElements();
+        setIsCreatureFilterEnabled(false);
         resetAtRange();
         resetHpRange();
         resetCostRange();
@@ -165,11 +174,14 @@ export function useCardSearch(cardData: CardData[]): UseCardSearchResult {
     };
 
     const hasActiveFilters =
-        selectedElements.length > 0 ||
-        atRange[0] !== availableAtRange[0] ||
-        atRange[1] !== availableAtRange[1] ||
-        hpRange[0] !== availableHpRange[0] ||
-        hpRange[1] !== availableHpRange[1] ||
+        isCreatureFilterEnabled ||
+        (isCreatureFilterEnabled &&
+            selectedElements.length > 0) ||
+        (isCreatureFilterEnabled &&
+            (atRange[0] !== availableAtRange[0] ||
+                atRange[1] !== availableAtRange[1] ||
+                hpRange[0] !== availableHpRange[0] ||
+                hpRange[1] !== availableHpRange[1])) ||
         costRange[0] !== availableCostRange[0] ||
         costRange[1] !== availableCostRange[1] ||
         abilityQuery.trim().length > 0 ||
@@ -184,9 +196,16 @@ export function useCardSearch(cardData: CardData[]): UseCardSearchResult {
 
         return cardData.filter((card) => {
             const matchesElement =
-                selectedElements.length === 0 || selectedElements.includes(card.属性);
-            const matchesAt = card.AT >= atRange[0] && card.AT <= atRange[1];
-            const matchesHp = card.HP >= hpRange[0] && card.HP <= hpRange[1];
+                !isCreatureFilterEnabled ||
+                selectedElements.length === 0 ||
+                (card.属性 !== null && selectedElements.includes(card.属性));
+            const matchesCreatureToggle = !isCreatureFilterEnabled || card.種類 === "クリーチャー";
+            const matchesAt =
+                !isCreatureFilterEnabled ||
+                (card.AT !== null && card.AT >= atRange[0] && card.AT <= atRange[1]);
+            const matchesHp =
+                !isCreatureFilterEnabled ||
+                (card.HP !== null && card.HP >= hpRange[0] && card.HP <= hpRange[1]);
             const matchesCost =
                 card.コスト.魔力 >= costRange[0] && card.コスト.魔力 <= costRange[1];
             const matchesAbility =
@@ -206,6 +225,7 @@ export function useCardSearch(cardData: CardData[]): UseCardSearchResult {
 
             return (
                 matchesElement &&
+                matchesCreatureToggle &&
                 matchesAt &&
                 matchesHp &&
                 matchesCost &&
@@ -221,6 +241,7 @@ export function useCardSearch(cardData: CardData[]): UseCardSearchResult {
         cardData,
         costRange,
         hpRange,
+        isCreatureFilterEnabled,
         selectedElements,
     ]);
 
@@ -228,6 +249,8 @@ export function useCardSearch(cardData: CardData[]): UseCardSearchResult {
         selectedElements,
         setSelectedElements,
         clearSelectedElements,
+        isCreatureFilterEnabled,
+        setIsCreatureFilterEnabled,
         atRange,
         setAtRange,
         resetAtRange,

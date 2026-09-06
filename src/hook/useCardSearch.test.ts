@@ -6,6 +6,8 @@ import type { CardData } from "../types";
 
 const cards: CardData[] = [
     {
+        種類: "クリーチャー",
+        分類: null,
         名前: "アーチビショップ",
         属性: "無",
         レアリティ: "R",
@@ -23,6 +25,8 @@ const cards: CardData[] = [
         img: "archbishop.jpg",
     },
     {
+        種類: "クリーチャー",
+        分類: null,
         名前: "サラマンダー",
         属性: "火",
         レアリティ: "S",
@@ -40,6 +44,8 @@ const cards: CardData[] = [
         img: "salamander.jpg",
     },
     {
+        種類: "クリーチャー",
+        分類: null,
         名前: "マーフォーク",
         属性: "水",
         レアリティ: "N",
@@ -56,22 +62,61 @@ const cards: CardData[] = [
         能力タグ: ["攻撃成功時", { 攻撃無効: ["基本AT40以上"] }],
         img: "merfolk.jpg",
     },
+    {
+        種類: "アイテム",
+        分類: "武器",
+        名前: "ロングソード",
+        属性: null,
+        レアリティ: "N",
+        AT: null,
+        HP: null,
+        コスト: {
+            魔力: 10,
+            土地: { 属性: null, 数: 0 },
+            カード: 0,
+        },
+        配置制限: [],
+        アイテム制限: [],
+        能力: "AT+30",
+        能力タグ: [],
+        img: "longsword.jpg",
+    },
 ];
 
 describe("useCardSearch", () => {
     it("returns all cards and the derived cost range by default", () => {
         const { result } = renderHook(() => useCardSearch(cards));
 
-        expect(result.current.availableCostRange).toEqual([20, 70]);
-        expect(result.current.costRange).toEqual([20, 70]);
-        expect(result.current.filteredCards).toHaveLength(3);
+        expect(result.current.availableCostRange).toEqual([10, 70]);
+        expect(result.current.costRange).toEqual([10, 70]);
+        expect(result.current.filteredCards).toHaveLength(4);
     });
 
-    it("filters by selected elements", () => {
+    it("limits search to creature cards when creature filtering is enabled", () => {
+        const { result } = renderHook(() => useCardSearch(cards));
+
+        act(() => {
+            result.current.setIsCreatureFilterEnabled(true);
+        });
+
+        expect(result.current.filteredCards.map((card) => card.名前)).toEqual([
+            "アーチビショップ",
+            "サラマンダー",
+            "マーフォーク",
+        ]);
+    });
+
+    it("filters by selected elements only when creature filtering is enabled", () => {
         const { result } = renderHook(() => useCardSearch(cards));
 
         act(() => {
             result.current.setSelectedElements(["火"]);
+        });
+
+        expect(result.current.filteredCards).toHaveLength(4);
+
+        act(() => {
+            result.current.setIsCreatureFilterEnabled(true);
         });
 
         expect(result.current.filteredCards.map((card) => card.名前)).toEqual([
@@ -95,6 +140,7 @@ describe("useCardSearch", () => {
         const { result } = renderHook(() => useCardSearch(cards));
 
         act(() => {
+            result.current.setIsCreatureFilterEnabled(true);
             result.current.setAtRange([35, 45]);
         });
 
@@ -107,6 +153,7 @@ describe("useCardSearch", () => {
         const { result } = renderHook(() => useCardSearch(cards));
 
         act(() => {
+            result.current.setIsCreatureFilterEnabled(true);
             result.current.setHpRange([35, 45]);
         });
 
@@ -132,6 +179,7 @@ describe("useCardSearch", () => {
 
         act(() => {
             result.current.setSelectedElements(["水", "火"]);
+            result.current.setIsCreatureFilterEnabled(true);
             result.current.setAtRange([10, 40]);
             result.current.setCostRange([10, 30]);
             result.current.setAbilityQuery("ダメージ");
@@ -204,6 +252,7 @@ describe("useCardSearch", () => {
 
         act(() => {
             result.current.setSelectedElements(["火"]);
+            result.current.setIsCreatureFilterEnabled(true);
             result.current.setAtRange([35, 45]);
             result.current.setHpRange([35, 45]);
             result.current.setCostRange([30, 60]);
@@ -219,6 +268,7 @@ describe("useCardSearch", () => {
         });
 
         expect(result.current.selectedElements).toEqual([]);
+        expect(result.current.isCreatureFilterEnabled).toBe(true);
         expect(result.current.atRange).toEqual([35, 45]);
         expect(result.current.hpRange).toEqual([35, 45]);
         expect(result.current.costRange).toEqual([30, 60]);
@@ -233,13 +283,14 @@ describe("useCardSearch", () => {
 
         expect(result.current.atRange).toEqual([20, 40]);
         expect(result.current.hpRange).toEqual([30, 40]);
-        expect(result.current.costRange).toEqual([20, 70]);
+        expect(result.current.costRange).toEqual([10, 70]);
         expect(result.current.abilityQuery).toBe("先制");
 
         act(() => {
             result.current.clearAbilityQuery();
             result.current.clearAbilityTagQueries();
             result.current.setAbilityTagMatchMode("and");
+            result.current.setIsCreatureFilterEnabled(false);
         });
 
         expect(result.current.abilityQuery).toBe("");
@@ -252,6 +303,7 @@ describe("useCardSearch", () => {
 
         act(() => {
             result.current.setSelectedElements(["火"]);
+            result.current.setIsCreatureFilterEnabled(true);
             result.current.setAtRange([35, 45]);
             result.current.setHpRange([35, 45]);
             result.current.setCostRange([30, 60]);
@@ -265,13 +317,14 @@ describe("useCardSearch", () => {
         });
 
         expect(result.current.selectedElements).toEqual([]);
+        expect(result.current.isCreatureFilterEnabled).toBe(false);
         expect(result.current.atRange).toEqual([20, 40]);
         expect(result.current.hpRange).toEqual([30, 40]);
-        expect(result.current.costRange).toEqual([20, 70]);
+        expect(result.current.costRange).toEqual([10, 70]);
         expect(result.current.abilityQuery).toBe("");
         expect(result.current.abilityTagQueries).toEqual(["", "", ""]);
         expect(result.current.abilityTagMatchMode).toBe("and");
-        expect(result.current.filteredCards).toHaveLength(3);
+        expect(result.current.filteredCards).toHaveLength(4);
         expect(result.current.hasActiveFilters).toBe(false);
     });
 

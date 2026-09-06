@@ -26,6 +26,8 @@ interface SearchFormProps {
     selectedElements: ElementType[];
     onSelectedElementsChange: (value: ElementType[]) => void;
     onSelectedElementsClear: () => void;
+    isCreatureFilterEnabled: boolean;
+    onCreatureFilterEnabledChange: (value: boolean) => void;
     atRange: [number, number];
     onAtRangeChange: (value: [number, number]) => void;
     onAtRangeReset: () => void;
@@ -55,6 +57,8 @@ export function SearchForm({
     selectedElements,
     onSelectedElementsChange,
     onSelectedElementsClear,
+    isCreatureFilterEnabled,
+    onCreatureFilterEnabledChange,
     atRange,
     onAtRangeChange,
     onAtRangeReset,
@@ -79,11 +83,14 @@ export function SearchForm({
     onResetFilters,
     hasActiveFilters,
 }: SearchFormProps) {
-    const isElementFilterActive = selectedElements.length > 0;
+    const isElementFilterActive =
+        isCreatureFilterEnabled && selectedElements.length > 0;
     const isAtFilterActive =
-        atRange[0] !== availableAtRange[0] || atRange[1] !== availableAtRange[1];
+        isCreatureFilterEnabled &&
+        (atRange[0] !== availableAtRange[0] || atRange[1] !== availableAtRange[1]);
     const isHpFilterActive =
-        hpRange[0] !== availableHpRange[0] || hpRange[1] !== availableHpRange[1];
+        isCreatureFilterEnabled &&
+        (hpRange[0] !== availableHpRange[0] || hpRange[1] !== availableHpRange[1]);
     const isCostFilterActive =
         costRange[0] !== availableCostRange[0] || costRange[1] !== availableCostRange[1];
     const isAbilityFilterActive = abilityQuery.trim().length > 0;
@@ -93,6 +100,17 @@ export function SearchForm({
 
     return (
         <Stack gap="lg">
+            <Stack gap="xs">
+                <Checkbox
+                    label="クリーチャーのみ検索を絞る"
+                    checked={isCreatureFilterEnabled}
+                    onChange={(event) => onCreatureFilterEnabledChange(event.currentTarget.checked)}
+                />
+                <Text c="dimmed" size="xs">
+                    有効な場合、属性・AT範囲・HP範囲を使ってクリーチャーのみを検索対象にします。
+                </Text>
+            </Stack>
+
             <Stack gap="xs">
                 <Group justify="space-between" align="end">
                     <Text fw={500} size="sm">
@@ -113,6 +131,7 @@ export function SearchForm({
                     data={elementOptions}
                     value={selectedElements}
                     onChange={(value) => onSelectedElementsChange(value as ElementType[])}
+                    disabled={!isCreatureFilterEnabled}
                     clearable
                     searchable
                 />
@@ -143,6 +162,7 @@ export function SearchForm({
                     max={availableAtRange[1]}
                     value={atRange}
                     onChange={(value) => onAtRangeChange(value as [number, number])}
+                    disabled={!isCreatureFilterEnabled}
                     minRange={0}
                     step={10}
                     label={(value) => `${value}`}
@@ -174,6 +194,7 @@ export function SearchForm({
                     max={availableHpRange[1]}
                     value={hpRange}
                     onChange={(value) => onHpRangeChange(value as [number, number])}
+                    disabled={!isCreatureFilterEnabled}
                     minRange={0}
                     step={10}
                     label={(value) => `${value}`}
