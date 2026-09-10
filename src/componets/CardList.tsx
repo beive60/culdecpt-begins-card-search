@@ -106,7 +106,7 @@ export function CardList({ cards }: CardListProps) {
             <Table.Td>
                 {card.img ? (
                     <Image
-                        src={`/${card.img}`}
+                        src={`${import.meta.env.BASE_URL}${card.img}`}
                         alt={card.名前}
                         h={96}
                         w={68}
