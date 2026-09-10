@@ -7,4 +7,5 @@ export default defineConfig({
         environment: "jsdom",
         setupFiles: "./src/test/setup.ts",
     },
+    base: "/culdecpt-begins-card-search/"
 });
