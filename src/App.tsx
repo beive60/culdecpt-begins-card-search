@@ -1,6 +1,7 @@
 import { AppShell, Container, Group, Paper, Stack, Text, Title } from "@mantine/core";
 
 import { CardList } from "./componets/CardList";
+import { Footer } from "./componets/Footer";
 import { SearchForm } from "./componets/SearchForm";
 import cardData from "./data/cards_database.json";
 import { useCardSearch } from "./hook/useCardSearch";
@@ -42,7 +43,7 @@ export default function App() {
     } = useCardSearch(cards);
 
     return (
-        <AppShell padding="md" header={{ height: 72 }}>
+        <AppShell padding="md" header={{ height: 72 }} footer={{ height: "auto" }}>
             <AppShell.Header>
                 <Group h="100%" px="lg" justify="space-between">
                     <Title order={2}>Culdcept Begins Card Search</Title>
@@ -92,6 +93,10 @@ export default function App() {
                     </Stack>
                 </Container>
             </AppShell.Main>
+
+            <AppShell.Footer withBorder>
+                <Footer />
+            </AppShell.Footer>
         </AppShell>
     );
 }
