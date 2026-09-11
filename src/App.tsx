@@ -43,7 +43,7 @@ export default function App() {
     } = useCardSearch(cards);
 
     return (
-        <AppShell padding="md" header={{ height: 72 }} footer={{ height: "auto" }}>
+        <AppShell padding="md" header={{ height: 72 }}>
             <AppShell.Header>
                 <Group h="100%" px="lg" justify="space-between">
                     <Title order={2}>Culdcept Begins Card Search</Title>
@@ -90,13 +90,10 @@ export default function App() {
                         </Paper>
 
                         <CardList cards={filteredCards} />
+                        <Footer />
                     </Stack>
                 </Container>
             </AppShell.Main>
-
-            <AppShell.Footer withBorder>
-                <Footer />
-            </AppShell.Footer>
         </AppShell>
     );
 }
